@@ -6,6 +6,24 @@
 #include <stdexcept> // TODO
 using namespace std;
 
+const int valid_char_arr_size = 11;
+const int punctuation_arr_size = 8;
+const char valid_char_arr[] = {
+	// Punctuation
+	'.',
+	',',
+	'!',
+	'?',
+	'-',
+	'*',
+	'\'',
+	'\"',
+	// Other
+	' ',
+	'[',
+	']',
+};
+
 uint32_t TOTAL_START_COUNT = 0;
 
 struct Edge {
@@ -40,6 +58,13 @@ void print_vertex_vector(vector<Vertex> &vertex_vector) {
 		for (const Edge &e : v.edge_vector) cout << '\t' << vertex_vector[e.index].word << ": " << e.weight << endl;
 	}
 }
+bool is_valid_char(char &c) {
+	if (isalpha(c)) return true;
+	for (int i = 0; i < valid_char_arr_size; i++) {
+		if (c == valid_char_arr[i]) return true;
+	}
+	return false;
+}
 void remove_brackets(string &s) {
 	string retval;
 	bool deleting = false;
@@ -49,6 +74,25 @@ void remove_brackets(string &s) {
 		else if (!deleting) retval.push_back(s[i]);
 	}
 	s = retval;
+}
+bool is_char_punctuation(char &c) {
+	for (int i = 0; i < punctuation_arr_size; i++) {
+		if (c == valid_char_arr[i]) return true;
+	}
+	return false;
+}
+bool remove_punctuation(string &word) {
+	if (word.empty()) return false;
+	// Is initial last char in word a comma
+	bool is_comma = false;
+	if (word[word.length() - 1] == ',') is_comma = true;
+	// Bracket
+	remove_brackets(word);
+	// Punctuation
+	while (is_char_punctuation(word[word.length() - 1])) {
+		word = word.substr(0, word.length() - 1);	
+	}
+	return is_comma;
 }
 
 int main() {
@@ -72,18 +116,12 @@ int main() {
 		uint32_t prev_index = 0;
 		// For each char in the line
 		for (int i = 0; i < static_cast<int>(line.length()); i++) {
-			if (!isalpha(line[i]) && line[i] != ',' && line[i] != '.' && line[i] != '?' && line[i] != '!' && line[i] != '\'' && line[i] != '-' && line[i] != '*' && line[i] != '\"' && line[i] != ' ' && line[i] != '[' && line[i] != ']') continue;
+			if (!is_valid_char(line[i])) continue;
 			if (line[i] != ' ') { word += line[i]; continue; }
 			if (word.empty()) continue;
 			for (char &c : word) c = toupper(c);
 			// Handle punctuation
-			const char last_char = word[word.size() - 1];
-			bool is_comma = false;
-			if (last_char == ',') {
-				word = word.substr(0, word.size() - 1);
-				is_comma = true;
-			}
-			if (last_char == '.' || last_char == '?' || last_char == '!' || last_char == '\'' || last_char == '*' || last_char == '\"') word = word.substr(0, word.size() - 1);
+			bool is_comma = remove_punctuation(word);
 			// If word does NOT exist in data
 			if (word_map.find(word) == word_map.end()) {
 				word_map[word] = vertex_vector.size();
