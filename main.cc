@@ -62,6 +62,7 @@ int main() {
 	// Read
 	string line;
 	while (getline(file, line)) {
+		remove_brackets(line);
 		if (line.empty()) continue;
 		line += ' ';
 		int line_word_count = 0;
@@ -69,13 +70,12 @@ int main() {
 		string word = "";
 		uint32_t curr_index = 0;
 		uint32_t prev_index = 0;
-		// For each word in the line
+		// For each char in the line
 		for (int i = 0; i < static_cast<int>(line.length()); i++) {
 			if (!isalpha(line[i]) && line[i] != ',' && line[i] != '.' && line[i] != '?' && line[i] != '!' && line[i] != '\'' && line[i] != ' ' && line[i] != '[' && line[i] != ']') continue;
 			if (line[i] != ' ') { word += line[i]; continue; }
-			for (char &c : word) c = toupper(c);
-			remove_brackets(word);
 			if (word.empty()) continue;
+			for (char &c : word) c = toupper(c);
 			// Handle punctuation
 			const char last_char = word[word.size() - 1];
 			bool is_comma = false;
