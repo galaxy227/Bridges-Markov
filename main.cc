@@ -64,6 +64,7 @@ int main() {
 	while (getline(file, line)) {
 		if (line.empty()) continue;
 		line += ' ';
+		int line_word_count = 0;
 		TOTAL_START_COUNT++;
 		bool is_start = true;
 		string word = "";
@@ -109,8 +110,9 @@ int main() {
 			prev_index = curr_index;
 			is_start = false;
 			word = "";
+			line_word_count++;
 		}
-		if (!line.empty()) vertex_vector[prev_index].end_count++;
+		if (line_word_count) vertex_vector[prev_index].end_count++;
 	}
 	// Prompt
 	cout << "1. Print Graph and Quit\n";
