@@ -83,7 +83,7 @@ int main() {
 				word = word.substr(0, word.size() - 1);
 				is_comma = true;
 			}
-			if (last_char == '.' || last_char == '?' || last_char == '!' || last_char == '\'') word = word.substr(0, word.size() - 1);
+			if (last_char == '.' || last_char == '?' || last_char == '!' || last_char == '\'' || last_char == '*') word = word.substr(0, word.size() - 1);
 			// If word does NOT exist in data
 			if (word_map.find(word) == word_map.end()) {
 				word_map[word] = vertex_vector.size();
