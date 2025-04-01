@@ -6,10 +6,12 @@
 #include <stdexcept> // TODO
 using namespace std;
 
-const int valid_char_arr_size = 12;
-const int punctuation_arr_size = 9;
+const int valid_char_arr_size = 14;
+const int punctuation_arr_size = valid_char_arr_size - 3;
 const char valid_char_arr[] = {
 	// Punctuation
+	'(',
+	')',
 	'.',
 	',',
 	'!',
