@@ -65,7 +65,6 @@ int main() {
 		if (line.empty()) continue;
 		line += ' ';
 		int line_word_count = 0;
-		TOTAL_START_COUNT++;
 		bool is_start = true;
 		string word = "";
 		uint32_t curr_index = 0;
@@ -94,7 +93,10 @@ int main() {
 			curr_index = word_map[word];
 			vertex_vector[curr_index].word_count++;
 			if (is_comma) vertex_vector[curr_index].comma_count++;
-			if (is_start) vertex_vector[curr_index].start_count++;
+			if (is_start) {
+				vertex_vector[curr_index].start_count++;
+				TOTAL_START_COUNT++;
+			}
 			else {
 				bool is_edge_exist = false;
 				for (int j = 0; j < static_cast<int>(vertex_vector[prev_index].edge_vector.size()); j++) {
