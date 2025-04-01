@@ -72,7 +72,7 @@ int main() {
 		uint32_t prev_index = 0;
 		// For each word in the line
 		for (int i = 0; i < static_cast<int>(line.length()); i++) {
-			if (line[i] == '=') continue;
+			if (!isalpha(line[i]) && line[i] != '.' && line[i] != '?' && line[i] != '!' && line[i] != ' ') continue;
 			if (line[i] != ' ') { word += line[i]; continue; }
 			if (word.empty()) continue;
 			for (char &c : word) c = toupper(c);
