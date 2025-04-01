@@ -110,7 +110,7 @@ int main() {
 			is_start = false;
 			word = "";
 		}
-		vertex_vector[prev_index].end_count++;
+		if (!line.empty()) vertex_vector[prev_index].end_count++;
 	}
 	// Prompt
 	cout << "1. Print Graph and Quit\n";
