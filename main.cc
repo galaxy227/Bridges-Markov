@@ -56,12 +56,9 @@ int main() {
 	vector<Vertex> vertex_vector;
 	unordered_map<string, uint32_t> word_map;
 	// File
-	/* TODO
 	const string filename = read("Please enter a text file to open:\n");
 	ifstream file(filename);
 	if (!file) { cout << "Bad filename yo\n"; exit(EXIT_FAILURE); }
-	*/
-	ifstream file("input/three");
 	// Read
 	string line;
 	while (getline(file, line)) {
