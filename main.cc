@@ -73,9 +73,9 @@ int main() {
 		for (int i = 0; i < static_cast<int>(line.length()); i++) {
 			if (!isalpha(line[i]) && line[i] != ',' && line[i] != '.' && line[i] != '?' && line[i] != '!' && line[i] != ' ' && line[i] != '[' && line[i] != ']') continue;
 			if (line[i] != ' ') { word += line[i]; continue; }
-			if (word.empty()) continue;
 			for (char &c : word) c = toupper(c);
 			remove_brackets(word);
+			if (word.empty()) continue;
 			// Handle punctuation
 			const char last_char = word[word.size() - 1];
 			bool is_comma = false;
