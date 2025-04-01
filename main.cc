@@ -72,7 +72,7 @@ int main() {
 		uint32_t prev_index = 0;
 		// For each char in the line
 		for (int i = 0; i < static_cast<int>(line.length()); i++) {
-			if (!isalpha(line[i]) && line[i] != ',' && line[i] != '.' && line[i] != '?' && line[i] != '!' && line[i] != '\'' && line[i] != '-' && line[i] != '*' && line[i] != ' ' && line[i] != '[' && line[i] != ']') continue;
+			if (!isalpha(line[i]) && line[i] != ',' && line[i] != '.' && line[i] != '?' && line[i] != '!' && line[i] != '\'' && line[i] != '-' && line[i] != '*' && line[i] != '\"' && line[i] != ' ' && line[i] != '[' && line[i] != ']') continue;
 			if (line[i] != ' ') { word += line[i]; continue; }
 			if (word.empty()) continue;
 			for (char &c : word) c = toupper(c);
@@ -83,7 +83,7 @@ int main() {
 				word = word.substr(0, word.size() - 1);
 				is_comma = true;
 			}
-			if (last_char == '.' || last_char == '?' || last_char == '!' || last_char == '\'' || last_char == '*') word = word.substr(0, word.size() - 1);
+			if (last_char == '.' || last_char == '?' || last_char == '!' || last_char == '\'' || last_char == '*' || last_char == '\"') word = word.substr(0, word.size() - 1);
 			// If word does NOT exist in data
 			if (word_map.find(word) == word_map.end()) {
 				word_map[word] = vertex_vector.size();
