@@ -59,7 +59,7 @@ void print_vertex_vector(vector<Vertex> &vertex_vector) {
 	}
 }
 bool is_valid_char(char &c) {
-	if (isalpha(c)) return true;
+	if (isalpha(c) || isdigit(c)) return true;
 	for (int i = 0; i < valid_char_arr_size; i++) {
 		if (c == valid_char_arr[i]) return true;
 	}
