@@ -74,6 +74,7 @@ int main() {
 		for (int i = 0; i < static_cast<int>(line.length()); i++) {
 			if (!isalpha(line[i]) && line[i] != ',' && line[i] != '.' && line[i] != '?' && line[i] != '!' && line[i] != ' ') continue;
 			if (line[i] != ' ') { word += line[i]; continue; }
+			if (word.empty()) continue;
 			for (char &c : word) c = toupper(c);
 			remove_brackets(word);
 			// Handle punctuation
@@ -84,7 +85,6 @@ int main() {
 				is_comma = true;
 			}
 			if (last_char == '.' || last_char == '?' || last_char == '!') word = word.substr(0, word.size() - 1);
-			if (word.empty()) continue;
 			// If word does NOT exist in data
 			if (word_map.find(word) == word_map.end()) {
 				word_map[word] = vertex_vector.size();
