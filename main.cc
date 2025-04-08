@@ -3,10 +3,12 @@
 #include <vector>
 #include <unordered_map>
 #include <cctype>
-#include <stdexcept> // TODO
+#include <stdexcept>
+#include <clocale>
+#include <locale>
 using namespace std;
 
-const int valid_char_arr_size = 23;
+const int valid_char_arr_size = 24;
 const int punctuation_arr_size = valid_char_arr_size - 3;
 const char valid_char_arr[] = {
 	// Punctuation
