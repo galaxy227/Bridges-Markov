@@ -1,40 +1,42 @@
-#include "/public/read.h"
 #include <iostream>
 #include <vector>
 #include <unordered_map>
 #include <cctype>
 #include <stdexcept>
 #include <locale>
+#include <string>
+#include <fstream>
 using namespace std;
 
-const int valid_char_arr_size = 24;
-const int punctuation_arr_size = valid_char_arr_size - 3;
-const char valid_char_arr[] = {
+const int valid_wchar_arr_size = 25;
+const int punctuation_arr_size = valid_wchar_arr_size - 3;
+const wchar_t valid_wchar_arr[] = {
 	// Punctuation
-	'.',
-	',',
-	'!',
-	'?',
-	'-',
-	'+',
-	'&',
-	'*',
-	';',
-	':',
-	'<',
-	'>',
-	'{',
-	'}',
-	'(',
-	')',
-	'/',
-	'\\',
-	'\'',
-	'\"',
+	L'.',
+	L',',
+	L'!',
+	L'?',
+	L'-',
+	L'+',
+	L'—',
+	L'&',
+	L'*',
+	L';',
+	L':',
+	L'<',
+	L'>',
+	L'{',
+	L'}',
+	L'(',
+	L')',
+	L'/',
+	L'\\',
+	L'\'',
+	L'\"',
 	// Other
-	' ',
-	'[',
-	']',
+	L' ',
+	L'[',
+	L']',
 };
 
 uint32_t TOTAL_START_COUNT = 0;
@@ -51,16 +53,16 @@ struct Vertex {
 	uint32_t end_count;
 	uint32_t comma_count;
 	uint32_t total_weight;
-	string word;
+	wstring word;
 	vector<Edge> edge_vector;
 
-	Vertex(const string word) : word_count(0), start_count(0), end_count(0), comma_count(0), total_weight(0), word(word) {}
+	Vertex(const wstring word) : word_count(0), start_count(0), end_count(0), comma_count(0), total_weight(0), word(word) {}
 };
 
 void print_vertex_vector(vector<Vertex> &vertex_vector) {
 	for (const Vertex &v : vertex_vector) {
 		// Print
-		cout << 
+		wcout << 
 		"Vertex " << v.word << 
 		" - Count: " << v.word_count <<
 		" TEW: " << v.total_weight <<
@@ -68,18 +70,18 @@ void print_vertex_vector(vector<Vertex> &vertex_vector) {
 		" End Count: " << v.end_count <<
 		" Comma Count: " << v.comma_count << 
 		" Edges:" << endl;
-		for (const Edge &e : v.edge_vector) cout << '\t' << vertex_vector[e.index].word << ": " << e.weight << endl;
+		for (const Edge &e : v.edge_vector) wcout << '\t' << vertex_vector[e.index].word << ": " << e.weight << endl;
 	}
 }
-bool is_valid_char(char &c) {
+bool is_valid_wchar(wchar_t &c) {
 	if (isalpha(c) || isdigit(c)) return true;
-	for (int i = 0; i < valid_char_arr_size; i++) {
-		if (c == valid_char_arr[i]) return true;
+	for (int i = 0; i < valid_wchar_arr_size; i++) {
+		if (c == valid_wchar_arr[i]) return true;
 	}
 	return false;
 }
-void remove_brackets(string &s) {
-	string retval;
+void remove_brackets(wstring &s) {
+	wstring retval;
 	bool deleting = false;
 	for (size_t i = 0; i < s.size(); i++) {
 		if (s[i] == '[') deleting = true;
@@ -88,57 +90,61 @@ void remove_brackets(string &s) {
 	}
 	s = retval;
 }
-bool is_char_punctuation(char &c) {
+bool is_wchar_punctuation(wchar_t &c) {
 	for (int i = 0; i < punctuation_arr_size; i++) {
-		if (c == valid_char_arr[i]) return true;
+		if (c == valid_wchar_arr[i]) return true;
 	}
 	return false;
 }
-bool remove_punctuation(string &word) {
+bool remove_punctuation(wstring &word) {
 	if (word.empty()) return false;
-	// Is initial last char in word a comma
+	// Is initial last wchar in word a comma
 	bool is_comma = false;
 	if (word[word.length() - 1] == ',') is_comma = true;
 	// Bracket
 	remove_brackets(word);
 	// Punctuation
-	while (is_char_punctuation(word[word.length() - 1])) {
+	while (is_wchar_punctuation(word[word.length() - 1])) {
 		word = word.substr(0, word.length() - 1);	
 	}
 	return is_comma;
 }
-void add_word_to_sentence(string& sentence, string word, const bool is_starting) {
-	for (char &c : word) c = tolower(c); 
-	if (is_starting) word[0] = toupper(word[0]);
-	else sentence += " ";
+void add_word_to_sentence(wstring& sentence, wstring word, const bool is_starting) {
+	for (wchar_t &c : word) c = towlower(c); 
+	if (is_starting) word[0] = towupper(word[0]);
+	else sentence += L" ";
 	sentence += word;
 }
 
 int main() {
+    locale::global(locale(""));
 	// Data
 	vector<Vertex> vertex_vector;
-	unordered_map<string, uint32_t> word_map;
+	unordered_map<wstring, uint32_t> word_map;
 	// File
-	const string filename = read("Please enter a text file to open:\n");
-	ifstream file(filename);
-	if (!file) { cout << "Bad filename yo\n"; exit(EXIT_FAILURE); }
+	wcout << "Please enter a text file to open:\n";
+	wstring wfilename = L"";
+	wcin >> wfilename;
+	string filename(wfilename.begin(), wfilename.end());
+	wifstream file(filename);
+	if (!file) { wcout << "Bad filename yo\n"; exit(EXIT_FAILURE); }
 	// Read
-	string line;
+	wstring line;
 	while (getline(file, line)) {
 		remove_brackets(line);
 		if (line.empty()) continue;
-		line += ' ';
+		line += L' ';
 		int line_word_count = 0;
 		bool is_start = true;
-		string word = "";
+		wstring word = L"";
 		uint32_t curr_index = 0;
 		uint32_t prev_index = 0;
-		// For each char in the line
+		// For each wchar in the line
 		for (int i = 0; i < static_cast<int>(line.length()); i++) {
-			if (!is_valid_char(line[i])) continue;
-			if (line[i] != ' ') { word += line[i]; continue; }
+			if (!is_valid_wchar(line[i])) continue;
+			if (line[i] != L' ') { word += line[i]; continue; }
 			if (word.empty()) continue;
-			for (char &c : word) c = toupper(c);
+			for (wchar_t &c : word) c = toupper(c);
 			// Handle punctuation
 			bool is_comma = remove_punctuation(word);
 			if (word.empty()) continue;
@@ -169,35 +175,40 @@ int main() {
 			}
 			prev_index = curr_index;
 			is_start = false;
-			word = "";
+			word = L"";
 			line_word_count++;
 		}
 		if (line_word_count) vertex_vector[prev_index].end_count++;
 	}
 	// Prompt
-	cout << "1. Print Graph and Quit\n";
-	cout << "2. Generate Random Lyrics\n";
-	cout << "3. View on BRIDGES\n";
-	int choice = read();
+	wcout << "1. Print Graph and Quit\n";
+	wcout << "2. Generate Random Lyrics\n";
+	wcout << "3. View on BRIDGES\n";
+	int choice = 0;
+	wcin >> choice;
 	// Print
 	if (choice == 1) {
 		print_vertex_vector(vertex_vector);
-		cout << "Total Start Count: " << TOTAL_START_COUNT << endl;
+		wcout << "Total Start Count: " << TOTAL_START_COUNT << endl;
 		exit(0);
 	}
 	// Generate
 	else if (choice == 2) {
 		// Prompt generation
 		if (!TOTAL_START_COUNT) {
-			cout << "Read no sentences, bailing out now...\n";
+			wcout << "Read no sentences, bailing out now...\n";
 			exit(1);
 		}
-		const int sentence_count = read("How many sentences do you wish to make?\n");
-		const int seed = read("Please enter the random seed:\n");
+		wcout << "How many sentences do you wish to make?\n";
+		int sentence_count = 0;
+		wcin >> sentence_count;
+		wcout << "Please enter the random seed:\n";
+		int seed = 0;
+		wcin >> seed;
 		srand(seed);
 		// For each sentence
 		for (int sentence_index = 0; sentence_index < sentence_count; sentence_index++) {
-			string sentence = "";
+			wstring sentence = L"";
 			Vertex* curr_vertex = nullptr;
 			// Pick starting word
 			int start_roll = rand() % TOTAL_START_COUNT;
@@ -226,10 +237,10 @@ int main() {
 				float percentage = (static_cast<float>(curr_vertex->comma_count) / static_cast<float>(curr_vertex->word_count)) * 100.0f;
 				int comma_threshold = static_cast<int>(percentage);
 				int comma_roll = (rand() % 100) + 1;
-				if (comma_roll <= comma_threshold) sentence += ",";
+				if (comma_roll <= comma_threshold) sentence += L",";
 			}
-			sentence += ".";
-			cout << sentence << endl;
+			sentence += L'.';
+			wcout << sentence << endl;
 		}
 	}
 
