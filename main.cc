@@ -151,7 +151,7 @@ int main() {
 			curr_index = word_map[word];
 			vertex_vector[curr_index].word_count++;
 			if (last_char == ',') vertex_vector[curr_index].comma_count++;
-			else if (last_char == '.') vertex_vector[curr_index].end_count++;
+			// else if (last_char == '.') vertex_vector[curr_index].end_count++;
 			if (is_start) {
 				vertex_vector[curr_index].start_count++;
 				TOTAL_START_COUNT++;
@@ -173,7 +173,8 @@ int main() {
 			word = "";
 			line_word_count++;
 		}
-		if (line_word_count && last_char != '.') vertex_vector[prev_index].end_count++;
+		// if (line_word_count && last_char != '.') vertex_vector[prev_index].end_count++;
+		if (line_word_count) vertex_vector[prev_index].end_count++;
 	}
 	// Prompt
 	cout << "1. Print Graph and Quit\n";
