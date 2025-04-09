@@ -171,6 +171,7 @@ int main() {
 			prev_index = curr_index;
 			is_start = false;
 			word = "";
+			line_word_count++;
 		}
 		if (line_word_count && last_char != '.') vertex_vector[prev_index].end_count++;
 	}
