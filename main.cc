@@ -239,6 +239,7 @@ int main() {
 				int comma_roll = (rand() % 100) + 1;
 				if (comma_roll <= comma_threshold) sentence += L",";
 			}
+			sentence += L'.';
 			wcout << sentence << endl;
 		}
 	}
