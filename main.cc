@@ -110,7 +110,7 @@ bool remove_punctuation(string &word) {
 void add_word_to_sentence(string& sentence, string word, const bool is_starting) {
 	for (char &c : word) c = tolower(c); 
 	if (is_starting) word[0] = toupper(word[0]);
-	else sentence += '.';
+	else sentence += " ";
 	sentence += word;
 }
 
@@ -228,6 +228,7 @@ int main() {
 				int comma_roll = (rand() % 100) + 1;
 				if (comma_roll <= comma_threshold) sentence += ",";
 			}
+			sentence += ".";
 			cout << sentence << endl;
 		}
 	}
