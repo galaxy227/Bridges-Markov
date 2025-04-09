@@ -109,6 +109,12 @@ bool remove_punctuation(wstring &word) {
 	}
 	return is_comma;
 }
+void add_word_to_sentence(wstring& sentence, wstring word, const bool is_starting) {
+	for (wchar_t &c : word) c = towlower(c); 
+	if (is_starting) word[0] = towupper(word[0]);
+	else sentence += L" ";
+	sentence += word;
+}
 
 int main() {
     locale::global(locale(""));
@@ -210,7 +216,7 @@ int main() {
 				start_roll -= vertex_vector.at(i).start_count;
 				if (start_roll < 0) {
 					curr_vertex = &vertex_vector.at(i);
-					sentence += curr_vertex->word;
+					add_word_to_sentence(sentence, curr_vertex->word, true);
 					break;
 				}
 			}
@@ -223,7 +229,7 @@ int main() {
 					word_roll -= curr_vertex->edge_vector.at(i).weight;
 					if (word_roll < 0) {
 						curr_vertex = &vertex_vector.at(curr_vertex->edge_vector.at(i).index);
-						sentence += L" " + curr_vertex->word;
+						add_word_to_sentence(sentence, curr_vertex->word, false);
 						break;
 					}
 				}
