@@ -128,6 +128,8 @@ int main() {
 		line += ' ';
 		bool is_start = true;
 		string word = "";
+		char last_char = ' ';
+		int line_word_count = 0;
 		uint32_t curr_index = 0;
 		uint32_t prev_index = 0;
 		// For each char in the line
@@ -137,7 +139,7 @@ int main() {
 			if (word.empty()) continue;
 			for (char &c : word) c = toupper(c);
 			// Handle punctuation
-			const char last_char = word[word.length() - 1];
+			last_char = word[word.length() - 1];
 			remove_punctuation(word);
 			if (word.empty()) continue;
 			// If word does NOT exist in data
@@ -170,6 +172,7 @@ int main() {
 			is_start = false;
 			word = "";
 		}
+		if (line_word_count && last_char != '.') vertex_vector[prev_index].end_count++;
 	}
 	// Prompt
 	cout << "1. Print Graph and Quit\n";
