@@ -107,6 +107,12 @@ bool remove_punctuation(string &word) {
 	}
 	return is_comma;
 }
+void add_word_to_sentence(string& sentence, string word, const bool is_starting) {
+	for (char &c : word) c = tolower(c); 
+	if (is_starting) word[0] = toupper(word[0]);
+	else sentence += " ";
+	sentence += word;
+}
 
 int main() {
 	// Data
@@ -199,7 +205,7 @@ int main() {
 				start_roll -= vertex_vector.at(i).start_count;
 				if (start_roll < 0) {
 					curr_vertex = &vertex_vector.at(i);
-					sentence += curr_vertex->word;
+					add_word_to_sentence(sentence, curr_vertex->word, true);
 					break;
 				}
 			}
@@ -212,7 +218,7 @@ int main() {
 					word_roll -= curr_vertex->edge_vector.at(i).weight;
 					if (word_roll < 0) {
 						curr_vertex = &vertex_vector.at(curr_vertex->edge_vector.at(i).index);
-						sentence += " " + curr_vertex->word;
+						add_word_to_sentence(sentence, curr_vertex->word, false);
 						break;
 					}
 				}
