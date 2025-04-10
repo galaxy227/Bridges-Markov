@@ -240,7 +240,7 @@ int main() {
 		// Init bridges api
 		Bridges bridges(2, "galaxy227", "818750556369");
 		bridges.setTitle("Bridges Markov");
-    	bridges.setDescription("GraphAdjList");
+    	bridges.setDescription("Here is a complicated looking graph. Green is the start, red is the end.");
 		// Init variables
 		GraphAdjList<string, string, string> graph; // Key, Vertex data, Edge data
 		const string start_str = "START NODE";

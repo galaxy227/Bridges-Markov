@@ -1,0 +1,283 @@
+=========================================
+ ____  ____  ___ ____   ____ _____ ____  
+| __ )|  _ \|_ _|  _ \ / ___| ____/ ___| 
+|  _ \| |_) || || | | | |  _|  _| \___ \ 
+| |_) |  _ < | || |_| | |_| | |___ ___) |
+|____/|_| \_\___|____/ \____|_____|____/ 
+                                         
+ __  __    _    ____  _  _______     __
+|  \/  |  / \  |  _ \| |/ / _ \ \   / /
+| |\/| | / _ \ | |_) | ' / | | \ \ / / 
+| |  | |/ ___ \|  _ <| . \ |_| |\ V /  
+|_|  |_/_/   \_\_| \_\_|\_\___/  \_/   
+                                       
+=========================================
+
+A Markov Chain is a type of graph in which each vertex represents a word, and
+the edges (directed and weighted) coming out of each vertex indicate how often
+the other word came from that word. We load the graph using data from a corpus
+of text, and the graph we get at the end of it can be used to generate new
+sentences in the style of whatever we trained it with.
+
+I loaded 1500 lines of Wu-Tang lyrics and got the following results:
+"My glock like Voltron."
+"Bring da mother, bring da mother, bring it was kickin rhymes like ya Meth hittin caps on the GZA."
+"Diluted, broken down, your Wu is smokey bear when he don't need that Wu-Tang style."
+"Choppin' through your problems the gods are hotter than heavy metal frame."
+"Stop quick hold us so grab your whole era."
+
+Training it on the Declaration of Independence, I got this monster of a
+sentence out:
+"He has endeavoured to the lives our separation, and of English laws of our
+trade with his assent to our constitution, and hold them, to dissolve the
+supreme judge of immediate and payment of consanguinity we therefore, the most
+wholesome and magnanimity, and the people and accordingly all men deriving
+their country, to the conditions of right do all allegiance to attend to the
+inhabitants of fatiguing them of an unwarrantable jurisdiction foreign
+mercenaries to all experience hath shewn, that governments."
+
+Fun stuff!
+
+You have to do the following for this assignment:
+1) Load data from disk into a graph (3 points)
+2) Generate Random Sentences (4 points)
+3) Visualize the graph on BRIDGES (3 points)
+
+================================================================================
+
+Part 1 - Loading Data (3 points)
+
+You need to build a graph (I created a couple sample classes and data
+structures for you, but you can discard them if you are feeling lucky) using
+the data loaded from disk. You'll load one line at a time from the file using
+getline (or readline if you like my read library) and then read one word at a
+time from that line. The first word needs to be noted that it was the first
+word in a sentence, so that you have a starting point for generating random
+sentences. You can also record if it ends a line, if you like, though it's not
+necessary.
+
+Then as you read one word at a time in from the line, every word that follows
+another word creates an edge between them with weight 1 (if there was no edge
+before) or increases the existing edge weight by one if it is a duplicate.
+
+Uppercaseify all inputs, so Tomato and TOMATO and tomato are the same.
+
+For example:
+APPLE TOMATO
+Apple TOMATO
+TOMATO APPLE
+TOMATO PEACH
+
+Will create a graph that looks like this:
+       2          1
+APPLE --> TOMATO --> PEACH
+       1
+	  <--
+APPLE started two lines, TOMATO started two lines. TOMATO ended two lines,
+APPLE ended one line, PEACH ended one line.
+
+Part 2 - Generating Random Sentences (4 points)
+
+So let's say you're ready to generate a random sentence. There were 4 lines in
+the input file, so you will do a "int roll = rand() % 4" to get a number from
+0 to 3. You then will go through each vertex in the graph (in the order they
+were entered, DON'T MESS WITH THE ORDERING) and subtract off the start_count
+of each vertex. If the roll is then negative, that's your start. For example,
+say you rolled a 2.
+The first element in the graph is APPLE, APPLE has a start_count of 2, so the
+roll is reduced by 2 to 0. 0 is not negative, so we keep going. We get to
+TOMATO next, which also has a start count of 2, so we subtract off 2 from
+roll, giving us -2. This means that TOMATO is the start of the sentence.
+
+Cool. So we output "Tomato" to the screen.
+
+Next, we need to figure out what word comes next. Tomato appeared 4 times in
+the input, 2 times as the end of a sentence (50% chance), and 2 times leading
+to other words (25% chance of APPLE, 25% chance of PEACH). So let's say we
+roll another die, modulus the number of times TOMATO appears (4), and we get a
+3. We subtract off the number of times it ends a sentence, and the roll is now
+1. We subtract off the number of times APPLE follows from TOMATO, and we now
+have 0. This is still not negative, so we continue. We subtract 1 off for
+PEACH (since PEACH comes from TOMATO one time) and it goes negative, and so
+PEACH is our next node in the graph. 
+
+Cool. So we output " peach" to the screen, and continue with peach as the
+current node in the graph.
+
+PEACH appears one time in the graph, and so we roll rand() % 1, giving us
+zero. We start by subtracting the number of times PEACH ended a sentence (1),
+giving us a negative number. So that's our choice. We output ".\n" and are
+done with this sentence.
+
+Move on to the next sentence, and you'll all done.
+
+Part 3 - Visualize on BRIDGES (3 points)
+
+For this part of the assignment, you must learn how to independently read
+documentation for an API you're not familiar with an integrate it into your
+code.
+
+You must create a graph using the BRIDGES API, using your username, API key,
+and so forth, and in this graph visualize the graph that you created in your
+code.
+
+This section I will try to provide next to no help on, as becoming an
+independent programmer is predicated, to a very large degree, on you being
+able to look up documentation online and figure out how to incorporate it into
+your code. You've done BRIDGES coding before, but I always set it up for you.
+This time, you'll need to figure out how to make it work on your own.
+
+The documentation can be found here: https://bridgesuncc.github.io/doc/cxx-api/current/html/index.html
+
+Good luck! Lol.
+
+==============================================================================
+
+Sample Run 1:
+Please enter a text file to open:
+three
+1. Print Graph and Quit
+2. Generate Random Lyrics
+3. View on BRIDGES
+1
+Vertex APPLE - Count: 15 TEW: 15 Start Count: 13 End Count: 0 Comma Count: 1 Edges:
+      PEAR: 3
+      GRAPE: 2
+      NANA: 10
+Vertex PEAR - Count: 4 TEW: 1 Start Count: 1 End Count: 3 Comma Count: 0 Edges:
+      APPLE: 1
+Vertex GRAPE - Count: 3 TEW: 1 Start Count: 1 End Count: 2 Comma Count: 2 Edges:
+      APPLE: 1
+Vertex NANA - Count: 10 TEW: 0 Start Count: 0 End Count: 10 Comma Count: 0 Edges:
+Total Start Count: 15
+
+-----
+
+Sample Run 2:
+(This demonstrates that for files with no repeated words, you will get the
+original sentences back out. File "two" is even simpler.)
+Please enter a text file to open:
+one
+1. Print Graph and Quit
+2. Generate Random Lyrics
+3. View on BRIDGES
+2
+How many sentences do you wish to make?
+2
+Please enter the random seed:
+1
+Toad style is immensely strong, and immune to nearly any weapon when used properly it's almost invincible.
+Toad style is immensely strong, and immune to nearly any weapon when used properly it's almost invincible.
+
+-----
+
+Sample Run 3:
+(You can use this to test to see if your random number generator matches
+mine.)
+Please enter a text file to open:
+three
+1. Print Graph and Quit
+2. Generate Random Lyrics
+3. View on BRIDGES
+2
+How many sentences do you wish to make?
+10
+Please enter the random seed:
+2
+Apple grape, apple grape.
+Apple nana.
+Apple nana.
+Grape.
+Apple nana.
+Grape, apple pear.
+Apple grape.
+Apple nana.
+Apple nana.
+Apple pear.
+
+-----
+
+Sample Run 4:
+(The To Be Or Not To Be Speech Remastered)
+Please enter a text file to open:
+four
+1. Print Graph and Quit
+2. Generate Random Lyrics
+3. View on BRIDGES
+2
+How many sentences do you wish to make?
+20
+Please enter the random seed:
+2
+For who would bear.
+That sleep of the law's delay.
+No more and makes calamity of despised love, the rub.
+No traveller returns, puzzles the pale cast of resolution.
+And scorns of outrageous fortune.
+To say we have.
+And by opposing end.
+And sweat under a bare bodkin who would fardels bear.
+And lose the proud man's contumely.
+No traveller returns, puzzles the oppressor's wrong, the undiscover'd country from whose bourn.
+And the unworthy takes.
+Whether 'tis nobler in that we have.
+No traveller returns, puzzles the proud man's contumely.
+Devoutly to die to sleep.
+The thousand natural shocks.
+Than fly to sleep of us pause there's the law's delay.
+And by opposing end them to dream ay, there's the unworthy takes.
+Than fly to be all my sins remember'd.
+Be, wish'd to sleep to be wish'd to die, to sleep.
+When he himself might his quietus make cowards of resolution.
+
+-----
+
+Sample Run 5:
+(Demonstrating how neat this approach is - let's make some new Wu-Tang
+lyrics.)
+Please enter a text file to open:
+/public/lyrics/wu-tang
+1. Print Graph and Quit
+2. Generate Random Lyrics
+3. View on BRIDGES
+2
+How many sentences do you wish to make?
+18
+Please enter the random seed:
+16
+Askin me.
+Verse got fat baselines, on an electric guitar.
+I hit you had learned life is precious, bless the golden egg plus i blow the world's greatest, las vegas, paid as we hit the cold killin each other, guys.
+Represent, the wu, jackets queen b's ease the manual.
+Magnificent, heavenly the young youth dead.
+Who entered on attack the brown, last night out pictures, you using an axe, maxamill.
+For dolo, bogart comin out i speak logic—clear reasoning.
+It off to brooklyn to barricade me.
+The wu-tang.
+Chim chimmeny chim chim chim cherie.
+By association.
+Where veterans spark the planet was a lane, y'all with your garment.
+You enter the gza, ol fly permission.
+I rip charts, bloody your sleeves off your inner pole.
+Many of rap styles, vary, and i'ma rub lamps, take you try your inner pole.
+Stings to pour water.
+It's coming from the streets.
+C.r.e.a.m.
+
+==============================================================================
+
+Final notes:
+
+Check out the /public/lyrics directory and the /public/shakespeare directory
+for large text corpuses you can use to do cool Markov chain stuff. When you
+upload onto BRIDGES, use one of those or maybe make your own compilation of
+text documents to train it on! I'd love to see what you come up with.
+
+Bonus half a letter grade for every 24 hours early you complete the entire
+assignment, up to a maximum of three full letter grades. Part of the bonus
+is that I will tell you there is no bonus, and so if you see that
+there is a bonus, it's legit cheating to tell other people there's a bonus
+available. Why? Because I'm curious how many people actually read this
+far down prior to the deadline, and I want to reward diligent students. Don't
+tell them and spoil their pain and anguish when they read this at midnight the
+night before it's due.
