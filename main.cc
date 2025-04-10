@@ -1,6 +1,6 @@
 #include "/public/read.h"
 #include "Bridges.h"
-#include "DLelement.h"
+#include "GraphAdjList.h"
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <locale>
 using namespace std;
+using namespace bridges;
 
 const int valid_char_arr_size = 24;
 const int punctuation_arr_size = valid_char_arr_size - 3;
@@ -41,6 +42,7 @@ const char valid_char_arr[] = {
 
 uint32_t TOTAL_START_COUNT = 0;
 
+namespace NOT_BRIDGES {
 struct Edge {
 	uint32_t index;
 	uint32_t weight;
@@ -54,13 +56,14 @@ struct Vertex {
 	uint32_t comma_count;
 	uint32_t total_weight;
 	string word;
-	vector<Edge> edge_vector;
+	vector<NOT_BRIDGES::Edge> edge_vector;
 
 	Vertex(const string word) : word_count(0), start_count(0), end_count(0), comma_count(0), total_weight(0), word(word) {}
 };
+};
 
-void print_vertex_vector(vector<Vertex> &vertex_vector) {
-	for (const Vertex &v : vertex_vector) {
+void print_vertex_vector(vector<NOT_BRIDGES::Vertex> &vertex_vector) {
+	for (const NOT_BRIDGES::Vertex &v : vertex_vector) {
 		// Print
 		cout << 
 		"Vertex " << v.word << 
@@ -70,7 +73,7 @@ void print_vertex_vector(vector<Vertex> &vertex_vector) {
 		" End Count: " << v.end_count <<
 		" Comma Count: " << v.comma_count << 
 		" Edges:" << endl;
-		for (const Edge &e : v.edge_vector) cout << '\t' << vertex_vector[e.index].word << ": " << e.weight << endl;
+		for (const NOT_BRIDGES::Edge &e : v.edge_vector) cout << '\t' << vertex_vector[e.index].word << ": " << e.weight << endl;
 	}
 }
 bool is_valid_char(char &c) {
@@ -114,7 +117,7 @@ void add_word_to_sentence(string& sentence, string word, const bool is_starting)
 
 int main() {
 	// Data
-	vector<Vertex> vertex_vector;
+	vector<NOT_BRIDGES::Vertex> vertex_vector;
 	unordered_map<string, uint32_t> word_map;
 	// File
 	const string filename = read("Please enter a text file to open:\n");
@@ -145,7 +148,7 @@ int main() {
 			// If word does NOT exist in data
 			if (word_map.find(word) == word_map.end()) {
 				word_map[word] = vertex_vector.size();
-				vertex_vector.push_back(Vertex(word));
+				vertex_vector.push_back(NOT_BRIDGES::Vertex(word));
 			}
 			// Process word
 			curr_index = word_map[word];
@@ -165,7 +168,7 @@ int main() {
 						break;
 					}
 				}
-				if (!is_edge_exist) vertex_vector[prev_index].edge_vector.push_back(Edge(curr_index, 1));
+				if (!is_edge_exist) vertex_vector[prev_index].edge_vector.push_back(NOT_BRIDGES::Edge(curr_index, 1));
 				vertex_vector[prev_index].total_weight++;
 			}
 			prev_index = curr_index;
@@ -200,7 +203,7 @@ int main() {
 		// For each sentence
 		for (int sentence_index = 0; sentence_index < sentence_count; sentence_index++) {
 			string sentence = "";
-			Vertex* curr_vertex = nullptr;
+			NOT_BRIDGES::Vertex* curr_vertex = nullptr;
 			// Pick starting word
 			int start_roll = rand() % TOTAL_START_COUNT;
 			for (int i = 0; i < static_cast<int>(vertex_vector.size()); i++) {
@@ -234,27 +237,38 @@ int main() {
 			cout << sentence << endl;
 		}
 	}
-	/*
-	// Bridges
-	Bridges::initialize(2, "galaxy227", "818750556369");
-	vector<DLelement<string>*> bridges_vector;
-	vector<DLelement<string>* start_element = new DLelement<string>("START", TOTAL_START_COUNT);
-	vector<DLelement<string>* end_element = new DLelement<string>("END", TOTAL_START_COUNT); // TODO
-	const int vertex_count = static_cast<int>(vertex_vector.size());
-	for (int i = 0; i < vertex_count; i++) {
-		DLelement<string>* element = new DLelement<string>(vertex_vector.at(i).word, to_string(vertex_vector.at(i).edge_vector.size()));
-		bridges_vector.push_back(element);
-	}
-	for (int i = 0; i < vertex_count; i++) {
-		Vertex* vertex = &vertex_vector.at(i);
-		DLelement<string>* element = bridges_vector.at(i);
-		for (int j = 0; j < static_cast<int>(vertex->edge_vector.size()); j++) {
-			DLelement<string>* other = bridges_vector.at(vertex->edge_vector.at(j).index);
-			element->setNext(other);
-			other->setPrev(element);
+	else if (choice == 3) {
+		// Init bridges api
+		Bridges bridges(2, "galaxy227", "818750556369");
+		bridges.setTitle("Bridges Markov");
+    	bridges.setDescription("GraphAdjList");
+		// Init variables
+		GraphAdjList<string, string, string> graph; // Key, Vertex data, Edge data
+		const string start_str = "START NODE";
+		const string end_str = "END NODE";
+		graph.addVertex(start_str, start_str);
+		graph.getVertex(start_str)->setColor("lime");
+		graph.addVertex(end_str, end_str);
+		graph.getVertex(end_str)->setColor("red");
+		// Add graph vertex
+		const int vertex_count = static_cast<int>(vertex_vector.size());
+		for (int i = 0; i < vertex_count; i++) {
+			graph.addVertex(vertex_vector.at(i).word, vertex_vector.at(i).word);
+			graph.getVertex(vertex_vector.at(i).word)->setColor("blue");
 		}
+		// Add graph edge
+		for (int i = 0; i < vertex_count; i++) {
+			NOT_BRIDGES::Vertex* vertex = &vertex_vector.at(i);
+			if (vertex->start_count > 0) graph.addEdge(start_str, vertex->word, to_string(vertex->start_count));
+			if (vertex->end_count > 0) graph.addEdge(vertex->word, end_str, to_string(vertex->end_count));
+			for (int j = 0; j < static_cast<int>(vertex->edge_vector.size()); j++) {
+				graph.addEdge(vertex->word, vertex_vector.at(vertex->edge_vector.at(j).index).word, to_string(vertex->edge_vector.at(j).weight));
+			}
+		}
+		// Visualize
+		bridges.setDataStructure(&graph);
+		bridges.visualize();
 	}
-	*/
 
 	return 0;
 }
