@@ -229,9 +229,8 @@ int main() {
 				}
 				// Handle comma
 				float percentage = (static_cast<float>(curr_vertex->comma_count) / static_cast<float>(curr_vertex->word_count)) * 100.0f;
-				int comma_threshold = static_cast<int>(percentage);
 				int comma_roll = (rand() % 100) + 1;
-				if (comma_roll <= comma_threshold) sentence += ",";
+				if (comma_roll <= percentage) sentence += ",";
 			}
 			sentence += ".";
 			cout << sentence << endl;
